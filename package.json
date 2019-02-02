@@ -1,0 +1,24 @@
+{
+  "name": "ptron",
+  "version": "1.0.0",
+  "description": "Javascript perceptron",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/fingerskier/ptron.js.git"
+  },
+  "keywords": [
+    "machine",
+    "learning",
+    "perceptron"
+  ],
+  "author": "fingerskier",
+  "license": "GPL-3.0",
+  "bugs": {
+    "url": "https://github.com/fingerskier/ptron.js/issues"
+  },
+  "homepage": "https://github.com/fingerskier/ptron.js#readme"
+}
