@@ -1,4 +1,5 @@
-const ptron = require('./ptron.js')
+const Perceptron = require('./perceptron.js')
 
-let thisn = new ptron(10,1,0.1)
+let P = new Perceptron(2,3)
 
+console.dir(P.weight)
