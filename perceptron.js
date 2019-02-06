@@ -24,6 +24,24 @@
 
 const endOfLine = require('os').EOL
 
+
+function createArray(length) {
+	var arr = new Array(length || 0),
+		i = length;
+
+	if (arguments.length > 1) {
+		var args = Array.prototype.slice.call(arguments, 1);
+		while(i--) arr[length-1 - i] = createArray.apply(this, args);
+	}
+
+	return arr;
+}
+
+function sigmoid(X) {
+	return 1 / (1 + Math.exp(X))
+}
+
+
 module.exports = class Perceptron {
 	constructor(numInputs, numLayers) {
 		this.depth = numInputs + 1
@@ -39,6 +57,32 @@ module.exports = class Perceptron {
 			this.weight[I] = I
 
 		this.bias = 1
+		this.learningRate = 0.1
+	}
+
+	activate() {
+		let X, Y, Z = 0
+
+		for (X = 1; X < this.width; X++) {
+			for (Y = 0; Y < this.height; Y++) {
+				let activation = 0
+				
+				for (Z = 1; Z < this.height; Z++) {
+					let weight = this.getElement(X,Y,Z)
+					let input = this.getElement(X-1,Y,0)
+					
+					activation += weight * input
+				}
+
+				activation += this.bias
+				
+				this.setElement(X, Y, Z, sigmoid(activation))
+			}
+		}
+	}
+
+	getElement(X,Y,Z) {
+		return this.weight[this.index(X,Y,Z)]
 	}
 
 	index (X, Y, Z) {
@@ -47,41 +91,16 @@ module.exports = class Perceptron {
 		return X + (this.height * Y) + (this.height * this.width * Z)
 	}
 
-	_getElement(X,Y,Z) {
-		return this.weight[this.index(X,Y,Z)]
-	}
-
-	_setElement(X,Y,Z,value) {
-		this.weight[this.index(X,Y,Z)] = value
-	}
-
-	input(X, Y, Z) {
-		for (let X in input) {
-			this._setElement(X,0,0,input[X])
+	set input(Input) {
+		for (let Y in Input) {
+			this.setElement(0, Y, 0, Input[Y])
 		}
 	}
 
-	activate() {
-		for (let X = 1; X < this.width; X++) {
-			for (let Y = 0; Y < this.height; Y++) {
-				let activation = 0
-				
-				for (let Z = 1; Z < this.height; Z++) {
-					let weight = this._getElement(X,Y,Z)
-					let input = this._getElement(X-1,0,Z)
-					
-					activation += weight * input
-				}
-				
-				this._setElement(activation)
-			}
-		}
-	}
-
-	output() {
+	get output() {
 		let result = new Array(this.height)
 		for (let Y = 0; Y < this.height; Y++) {
-			result[Y] = this._getElement(this.width-1, Y, 0)
+			result[Y] = this.getElement(this.width-1, Y, 0)
 		}
 
 		return result
@@ -95,7 +114,7 @@ module.exports = class Perceptron {
 
 			for (let Y=0; Y < this.height; Y++) {
 				for (let X=0; X < this.width; X++) {
-					result += `(${X},${Y},${Z}),`
+					result += `${this.getElement(X,Y,Z)}, `
 				}
 
 				result += endOfLine
@@ -105,5 +124,30 @@ module.exports = class Perceptron {
 		}
 
 		return result
+	}
+
+	setElement(X,Y,Z,value) {
+		this.weight[this.index(X,Y,Z)] = value
+	}
+
+	train(expectation) {
+		// expectation is an array corresponding to the output array
+		let I, X, Y, Z = 0
+		// let error = [][]
+
+		for (X=this.width-1; X > 0; X--) {
+
+		}
+
+		// the error for a level is the difference between the expected value and the output scaled [down] by the learning-rate
+		let error = expectation.map(x => (x - this.getElement(this.width-1, I++, 0) * this.learningRate))
+
+		// calculate the new weights for the previous layer
+		
+
+		// apply the new weights for the previous layer
+
+
+		// use the new activations
 	}
 }
