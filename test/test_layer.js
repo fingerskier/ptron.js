@@ -9,20 +9,20 @@ let layer = new Ptron.layer(2,2)
 
 assert(layer instanceof Ptron.layer, "layer construction as Ptron type")
 
-let inputVals = [1,2]
-layer.input(inputVals)
+let inputVals = [.3, .4]
+
+layer.activate(inputVals)
 
 assert(layer.nodes[0].inputs[0] == layer.nodes[1].inputs[0], "layer ptron inputs should be set by input()")
 
-assert(!layer.fresh, "layer un-fresh expected after input")
 
-layer.activate()
+layer.learn([-0.1, 0.1], 0.1)
+assert(Math.abs(layer.error) <= 0.1, "error should be less than 0.1 after training")
 
-assert(layer.fresh, "expect layer freshness after activation")
+console.log(layer, layer.error)
 
-let expectation = [layer.output[0]-0.1, layer.output[1]+0.1]
-while (layer.error > 0.1) layer.train(expectation)
 
-assert(layer.error, "error should be less than 0.1 after training")
+layer.learn([0.5, 0.8], 0.1)
+assert(Math.abs(layer.error) <= 0.1, "layer should be able to re-learn")
 
-console.log(layer)
+console.log(layer, layer.error)

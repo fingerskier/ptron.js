@@ -1,6 +1,6 @@
-function assert(truthy, passMsg, failMsg) {
-	if (truthy) console.log("Pass: ", passMsg)
-	else console.error("Fail: ", errorMsg)
+function assert(truthy, msg) {
+	if (truthy) console.log("Pass: ", msg)
+	else console.error("Fail: ", msg)
 }
 
 
@@ -8,21 +8,20 @@ let Ptron = require('../ptron.js')
 
 let ptron = new Ptron.ptron(2)
 
-assert(
-	ptron instanceof Ptron.ptron,
-	"ptron construction succesful",
-	"ptron construction failed"
-)
+assert( ptron instanceof Ptron.ptron, "ptron construction of correct type" )
 
-inputVals = [1,2]
+inputVals = [.1,.2]
 
-ptron.input(inputVals)
-assert(!ptron.fresh, "ptron un-fresh expected after input", "ptron shouldn't be fresh after input")
+ptron.activate(inputVals)
 
-ptron.output
-assert(ptron.output != NaN, "ptron output should be numeric", "ptron output isn't numeric")
+assert(ptron.activation, "ptron has an activation value after being activated")
 
-while (ptron.error > 0.1) ptron.train(ptron.output - 0.1)
-assert(ptron.error <= 0.1, "ptron error should decrease after training", "ptron error didn't decrease after training")
+assert(ptron.activation != NaN, "ptron output should be numeric")
+
+ptron.learn(0.9, 0.1)
+assert(Math.abs(ptron.error) <= 0.1, "ptron error should decrease below threshold after learning")
+
+ptron.learn(0.1, 0.1)
+assert(Math.abs(ptron.error) <= 0.1, "ptron should be able to re-learn")
 
 console.info(ptron)

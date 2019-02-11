@@ -1,5 +1,14 @@
 // a layer is a set of perceptrons that share the same inputs
 
+const arrayMax = arr => {
+	let result = 0
+
+	for (let X of arr) 
+		if (Math.abs(X) > result) result = X
+
+	return result
+}
+
 const Perceptron = require('./perceptron.js')
 
 
@@ -14,23 +23,23 @@ module.exports = class Layer {
 		}
 	}
 
-	activate() {
-		let result = []
+	activate(inputs) {
+		this.activation = []
+		this.inputs = inputs	// remember inputs for training
 
-		for (let node of this.nodes) {
-			result.push(node.output)
+		for (let I in this.nodes) {
+			this.activation.push(this.nodes[I].activate(inputs))
 		}
 
-		this.activation = result
-		this.fresh = true
+		return this.activation
 	}
 
 	get error() {
-		let result = 0
+		let errors = []
 
-		this.nodes.forEach(node => {node.error > result ? result = node.error : result})
+		this.nodes.forEach(node => errors.push(node.error))
 
-		return result / this.nodes.length
+		return arrayMax(errors)
 	}
 
 	get expectation() {
@@ -39,7 +48,7 @@ module.exports = class Layer {
 		if (this.nodes.length > 1) {
 			this.nodes.forEach(node=>{
 				let I = 0
-				
+
 				node.expect.forEach(expected=>{
 					node.expectation[I++]+=expected
 				})
@@ -49,19 +58,10 @@ module.exports = class Layer {
 		return this.expect
 	}
 
-	input(valArray) {
-		// this.nodes.forEach(node=>node.input(valArray))
+	learn(expected_output, threshold) {
+		this.train(expected_output)
 
-		for (let node of this.nodes) {
-			node.input(valArray)
-		}
-		this.fresh = false
-	}
-
-	get output() {
-		if (!this.fresh) activate()
-
-		return this.activation
+		while (Math.abs(this.error) > threshold) this.train(expected_output)
 	}
 
 	train(expectation) {
@@ -70,5 +70,7 @@ module.exports = class Layer {
 		for (let I in this.nodes) {
 			this.nodes[I].train(expectation[I])
 		}
+
+		this.activate(this.inputs)
 	}
 }

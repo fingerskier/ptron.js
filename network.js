@@ -1,3 +1,13 @@
+const arrayMax = arr => {
+	let result = 0
+
+	for (let X of arr) 
+		if (Math.abs(X) > result) result = X
+
+	return result
+}
+
+
 const Layer = require('./layer.js')
 
 module.exports = class Network {
@@ -13,65 +23,49 @@ module.exports = class Network {
 
 			this.layers[I] = new Layer(numInputs, numOutputs)
 		}
-
-		this.fresh = false	// poor-man's memoization
 	}
 
-	activate() {
-		let thisLayer
+	activate(inputs) {
+		let layer
 
-		for (let I in this.layers) {
-			thisLayer = this.layers[I]
-			
-			if (I > 0) {
-				// the inputs for the first layer are loaded explicitly
-				// hidden and output layers are inputized of the activation of each prior layer
-				let prevLayer = this.layers[I-1]
+		this.inputs = inputs
 
-				thisLayer.input(prevLayer.output)
-			}
+		for (layer of this.layers) {
+			layer.activate(inputs)
 
-			thisLayer.activate()
+			inputs = layer.activation
 		}
 
-		this.activation = thisLayer.output	// save the output
-		this.fresh = true
+		this.activation = layer.activation
+		return this.activation
 	}
 
 	get error() {
-		let result = 0
+		let errors = []
 
-		this.layers.forEach(layer => {layer.error > result ? result = layer.error : result})
+		this.layers.forEach(layer => errors.push(layer.error))
 
-		return result / this.layers.length
+		return arrayMax(errors)
 	}
 
-	input(valueArray) {
-		this.layers[0].input(valueArray)
+	learn(expecto, threshold) {
+		this.train(expecto)
 
-		this.fresh = false
-	}
-
-	get output() {
-		if (!this.fresh) this.activate()
-
-		return this.activation
+		while (Math.abs(this.error) > threshold) this.train(expecto)
 	}
 
 	train(expecto) {
 		let expectation = expecto
 		// expectation is an array of expected values for the network
+
 		for (let I = this.layers.length-1; I >= 0; I--) {
 			let thisLayer = this.layers[I]
 
-			// we back-track and use the newly minted expectation for the next/prior layer
 			thisLayer.train(expectation)
 
 			expectation = thisLayer.expectation
 		}
-	}
 
-	trainTo(expecto, threshold) {
-		while (this.error > threshold) this.train(expecto)
+		this.activate(this.inputs)
 	}
 }

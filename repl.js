@@ -13,22 +13,13 @@ fs.statSync('.node_repl_history')
 
 server.context.P = require('./ptron.js')
 
-server.context.net = new server.context.P.network([2,1])
+server.context.net = new server.context.P.network([2,2,1])
+server.context.in0 = [.1,.2]
+server.context.in1 = [.2,.8]
 
-server.context.one = [1]
-server.context.zero = [0]
+server.context.ptron = new server.context.P.ptron(2)
+server.context.ptron.activate(server.context.in0)
 
-server.context.net.input([0,0])
-server.context.net.trainTo([0], 0.1)
-
-server.context.net.input([0,1])
-server.context.net.trainTo([1], 0.1)
-
-server.context.net.input([1,0])
-server.context.net.trainTo([1], 0.1)
-
-server.context.net.input([1,1])
-server.context.net.trainTo([0], 0.1)
 
 /*
 0	0	0
@@ -36,9 +27,6 @@ server.context.net.trainTo([0], 0.1)
 1	0	1
 1	1	0
 */
-
-
-console.dir(server.context.net)
 
 
 server.on('exit', function() {

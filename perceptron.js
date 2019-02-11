@@ -4,37 +4,30 @@ function sigmoid(X) {
 
 
 module.exports = class Perceptron {
-	constructor(dimension = 1, bias = 0.1, rate = 0.1) {
-		this.activation = 0.0
+	constructor(dimension = 1, bias = 1, rate = 0.1) {
 		this.bias = bias
 		this.error = 1.0
 		this.expect = new Array(dimension)
-		this.inputs = new Array(dimension)
 		this.rate = rate
 		this.weight = new Array(dimension)
 
 		// initially random weight
-		this.inputs.fill(0)
 		for (let I = 0; I < dimension; ++I) {
 			this.weight[I] = Math.random()
 		}
 	}
 
-	activate(valArray) {
+	activate(inputs) {
 		let result = this.bias
 
-		for (let I in this.inputs) {
-			// this.inputs[I] = sigmoid(valArray[I])
-			this.inputs[I] = valArray[I]
+		this.inputs = inputs	// remember the inputs for training
+
+		for (let I = 0; I < inputs.length; ++I) {
+			result += this.weight[I] * inputs[I]
 		}
 
-		for (let I = 0; I < this.inputs.length; ++I) {
-			result += this.weight[I] * this.inputs[I]
-		}
-
-		// this.activation = sigmoid(result)
+		// result = sigmoid(result)
 		this.activation = result
-
 		return result
 	}
 
@@ -42,16 +35,20 @@ module.exports = class Perceptron {
 		return this.expect
 	}
 
-	get output() {
-		return this.activation
+	learn(expected_output, threshold) {
+		this.error = expected_output - this.activate(this.inputs)
+
+		while (Math.abs(this.error) > threshold) this.train(expected_output)
 	}
 
 	train(expected_output) {
-		this.error = expected_output - this.output
+		// training is based on the previous output
+		// so, the ptron must be activated prior to training a new set of inputs
+		this.error = expected_output - this.activate(this.inputs)
 
 		for (let I in this.weight) {
 			this.expect[I] = Math.sqrt(Math.abs(this.error / this.weight[I]))
-			this.weight[I] = this.weight[I] - (this.error * this.inputs[I] * this.rate)
+			this.weight[I] = this.weight[I] + (this.error * this.inputs[I] * this.rate)
 		}
 	}
 }
