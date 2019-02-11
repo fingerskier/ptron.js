@@ -1,0 +1,9 @@
+y = mx + ny + b
+
+y1 = m1x + n1y + b
+
+m1x = n1y + b - y1
+
+x = (n1y + b - y1) / m1x
+
+expect = sqrt((old_output - new_output) / old_weight)

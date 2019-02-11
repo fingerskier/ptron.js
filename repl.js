@@ -11,18 +11,42 @@ const server = repl.start({
 fs.statSync('.node_repl_history')
 
 
-server.context.perceptron = require('./perceptron.js')
-server.context.p = new server.context.perceptron(2,3)
-server.context.p.input = [1,2]
-server.context.p.activate()
+server.context.P = require('./ptron.js')
 
-server.context.createArray = 
+server.context.net = new server.context.P.network([2,1])
+
+server.context.one = [1]
+server.context.zero = [0]
+
+server.context.net.input([0,0])
+server.context.net.trainTo([0], 0.1)
+
+server.context.net.input([0,1])
+server.context.net.trainTo([1], 0.1)
+
+server.context.net.input([1,0])
+server.context.net.trainTo([1], 0.1)
+
+server.context.net.input([1,1])
+server.context.net.trainTo([0], 0.1)
+
+/*
+0	0	0
+0	1	1
+1	0	1
+1	1	0
+*/
+
+
+console.dir(server.context.net)
+
 
 server.on('exit', function() {
 	fs.appendFileSync('.node_repl_history', server.lines.join('\n'))
 })
 
 server.on('reset', function() {
-	server.context.perceptron = require('./perceptron.js')
-	server.context.p = new server.context.perceptron(2,3)
+	server.context.P = require('./ptron.js')
+
+	server.context.net = new server.context.P.network(2,2,1)
 })
