@@ -2,10 +2,6 @@ function sigmoid(X) {
 	return 1 / (1 + Math.exp(X))
 }
 
-function RELU(X) {
-	return Math.max(0, X)
-}
-
 
 module.exports = class Perceptron {
 	constructor(dimension = 1, bias = 1, rate = 0.1) {
@@ -30,7 +26,7 @@ module.exports = class Perceptron {
 			result += this.weight[I] * inputs[I]
 		}
 
-		result = RELU(result)
+		// result = sigmoid(result)
 		this.activation = result
 		return result
 	}
@@ -43,14 +39,6 @@ module.exports = class Perceptron {
 		this.error = expected_output - this.activate(this.inputs)
 
 		while (Math.abs(this.error) > threshold) this.train(expected_output)
-	}
-
-	get model() {
-		return this.weight
-	}
-
-	set model(valArray) {
-		this.weight = valArray
 	}
 
 	train(expected_output) {

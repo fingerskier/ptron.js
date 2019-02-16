@@ -7,6 +7,8 @@ Javascript perceptron class and framework
 The goal of this project is to create a small, useable classifier which is composable into larger networks.
 
 Basically, a perceptron (though the term may be unduly abrogated) is a solver for a linear equation; a network of perceptrons can [theoretically] "solve" systems of linear equations.
+These solutions are fuzzy, in the sense that they don't give absolute answers but stochastic ones...but this can be quite helpful - especially if the margins are very low.
+Engangled groups of perceptrons can be trained to for classification and prediction of myriad models.
 
 
 ## Usage

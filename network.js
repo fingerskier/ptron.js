@@ -48,6 +48,24 @@ module.exports = class Network {
 		return arrayMax(errors)
 	}
 
+	get model() {
+		let result = []
+
+		for (let layer of this.layers) {
+			result.push(layer.model)
+		}
+
+		return result
+	}
+
+	set model(valArrays) {
+		let I = 0
+
+		for (let layer of this.layers) {
+			layer.model = valArrays[I++]
+		}
+	}
+
 	learn(expecto, threshold) {
 		this.train(expecto)
 

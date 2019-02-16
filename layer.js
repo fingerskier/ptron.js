@@ -64,6 +64,24 @@ module.exports = class Layer {
 		while (Math.abs(this.error) > threshold) this.train(expected_output)
 	}
 
+	get model() {
+		let result = []
+
+		for (let node of this.nodes) {
+			result.push(node.weight)
+		}
+
+		return result
+	}
+
+	set model(valArrays) {
+		let I = 0
+
+		for (let node of this.nodes) {
+			node.model = valArrays[I++]
+		}
+	}
+
 	train(expectation) {
 		this.expect.fill(0)
 
