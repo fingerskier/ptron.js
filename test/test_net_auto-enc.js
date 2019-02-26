@@ -6,7 +6,7 @@ function assert(truthy, msg) {
 
 let Ptron = require('../ptron.js')
 
-let net = new Ptron.network([5,5,5])
+let net = new Ptron.network([5,5,2,5])
 
 assert(net instanceof Ptron.network, "network construction as network type")
 
@@ -31,7 +31,7 @@ for (let I of input) {
 	net.activate(I)
 	net.learn(I, acceptableError)
 	assert(net.error < acceptableError, `net trained to ${X++}`)
-	console.log(I, net.activation)
+	console.log(net.layers[1].activation)
 }
 
 
@@ -41,7 +41,7 @@ for (let I of input) {
 	net.activate(I)
 	net.learn(I, acceptableError)
 	assert(net.error <= acceptableError, `training holds for ${X++}`)
-	console.log(I, net.activation)
+	console.log(net.layers[1].activation)
 }
 
 

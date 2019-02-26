@@ -14,6 +14,4 @@ while (running) {
 	mem_net.activate(out_net.output)
 
 	out_net.activate(feed_net.output.concat(mem_net.output))
-
-	
 }
