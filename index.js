@@ -1,4 +1,10 @@
-const Perceptron = require('./perceptron.js')
+function sigmoid(X) {
+	return 1 / (1 + Math.exp(X))
+}
 
-let P = new Perceptron(2,3)
 
+module.exports.ptron = require('./perceptron.js')
+
+module.exports.layer = require('./layer.js')
+
+module.exports.network = require('./network.js')
