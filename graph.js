@@ -16,6 +16,8 @@ module.exports = class {
 			 7->[]
 			]
 		*/
+		// Note that the _graph_ does not enforce any kind of structure;
+		// errant topology is up to the implementor to disentangle
 		this.activation = []	// activation of each layer, by layer-index
 		this.layer = new Array(conx.length)	// the layer number of each element, by node-index
 		this.nodes = new Array(conx.length)	// the actual perceptron controllers
@@ -41,21 +43,34 @@ module.exports = class {
 		// glean the dimension of each layer
 		let dimension = new Array(conx.length)
 		for (let layer of this.topology)
-			for (let node of layer)
-				dimension[node] = layer.length
-console.log(dimension)
+			for (let nodeIndex of layer)
+				dimension[nodeIndex] = layer.length
 
 		// instantiate all the node controllers
 		for (let I in this.nodes) this.nodes.push(new Perceptron(dimension[I]))
 	}
 
-	activate() {
+	activate(inputs) {
 		// cycle through "layers" and activate each node, top to bottom
-		for (let layer of this.topology) {
-			for (let node of layer) {
+		let layerActivation = []
 
+		for (let layer of this.topology) {
+			layerActivation = []
+
+			for (let nodeIndex of layer) {
+				let thisNode = this.nodes[nodeIndex]
+
+				// activate this node
+				thisNode.activate(inputs)
+
+				// store this node's activation in an array for the next layer
+				layerActivation.push(thisNode.activation)
 			}
+
+			inputs = layerActivation
 		}
+
+		this.activation = layerActivation
 	}
 
 	get prettyTopology() {
@@ -65,7 +80,6 @@ console.log(dimension)
 			if (maxLength < X.length) maxLength = X.length 
 
 		let result = ""
-
 
 		for (let I = 0; I < maxLength; I++) {
 			for (let layer of this.topology) {
