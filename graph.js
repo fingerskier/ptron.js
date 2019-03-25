@@ -1,3 +1,13 @@
+const arrayMax = arr => {
+	let result = 0
+
+	for (let X of arr) 
+		if (Math.abs(X) > result) result = X
+
+	return result
+}
+
+
 const Perceptron = require('./perceptron.js')
 
 
@@ -20,7 +30,7 @@ module.exports = class {
 		// errant topology is up to the implementor to disentangle
 		this.activation = []	// activation of each layer, by layer-index
 		this.layer = new Array(conx.length)	// the layer number of each element, by node-index
-		this.nodes = new Array(conx.length)	// the actual perceptron controllers
+		this.nodes = []	// the actual perceptron controllers
 		this.topology = []		// array of nodes per layer
 
 		// elements in the array give the layer number of each node
@@ -47,30 +57,90 @@ module.exports = class {
 				dimension[nodeIndex] = layer.length
 
 		// instantiate all the node controllers
-		for (let I in this.nodes) this.nodes.push(new Perceptron(dimension[I]))
+		for (let I = 0; I < conx.length; I++) this.nodes.push(new Perceptron(dimension[I]))
 	}
 
 	activate(inputs) {
 		// cycle through "layers" and activate each node, top to bottom
-		let layerActivation = []
-
+        let layerActivation = []
+        
 		for (let layer of this.topology) {
 			layerActivation = []
 
 			for (let nodeIndex of layer) {
 				let thisNode = this.nodes[nodeIndex]
-
+				
 				// activate this node
 				thisNode.activate(inputs)
-
+				
 				// store this node's activation in an array for the next layer
 				layerActivation.push(thisNode.activation)
 			}
-
+			
 			inputs = layerActivation
 		}
-
+		
 		this.activation = layerActivation
+
+		return this.activation
+    }
+    
+	get error() {
+		let errors = []
+
+		this.nodes.forEach(node => errors.push(node.error))
+
+		return arrayMax(errors)
+	}
+
+	get expectation() {
+		this.expect = this.nodes[0].expect
+
+		if (this.nodes.length > 1) {
+			this.nodes.forEach(node=>{
+				let I = 0
+
+				node.expect.forEach(expected=>{
+					node.expectation[I++]+=expected
+				})
+			})
+		}
+
+		return this.expect
+	}
+
+	learn(expected_output, threshold) {
+		this.train(expected_output)
+
+		while (Math.abs(this.error) > threshold) this.train(expected_output)
+	}
+
+	get model() {
+		let result = []
+
+		for (let node of this.nodes) {
+			result.push(node.weight)
+		}
+
+		return result
+	}
+
+	set model(valArrays) {
+		let I = 0
+
+		for (let node of this.nodes) {
+			node.model = valArrays[I++]
+		}
+	}
+
+	train(expectation) {
+		this.expect.fill(0)
+
+		for (let I in this.nodes) {
+			this.nodes[I].train(expectation[I])
+		}
+
+		this.activate(this.inputs)
 	}
 
 	get prettyTopology() {
