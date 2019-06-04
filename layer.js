@@ -61,13 +61,22 @@ module.exports = class Layer {
 			node.model = valArrays[I++]
 	}
 
+	activate(inputter) {
+		let inputs = inputter.slice()
+
+		this.signal = []
+
+		for (let I in this.nodes) {
+			this.nodes[I].activate(inputs)
+			this.signal.push(this.nodes[I].signal)
+		}
+	}
+
 	train(inputter, outputter) {
 		let inputs = inputter.slice()
 		let outputs = outputter.slice()
 
-		this.signal = []
-
-		this.expect.fill(0)
+		this.activate(inputter)
 
 		for (let I in this.nodes) {
 			this.nodes[I].train(inputs, outputs[I])

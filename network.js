@@ -51,21 +51,27 @@ module.exports = class Network {
 		}
 	}
 
-	train(inputter, outputter) {
+	activate(inputter) {
 		let inputs = inputter.slice()
-		let outputs = outputter.slice()
 		let layer
 		let I = 0
 
 		// feed-forward
 		for (layer of this.layers) {
-console.log(`train layer${I++} w/ ${inputs}->${outputs}`)
-			layer.train(inputs, outputs)
+			layer.activate(inputs)
 
 			inputs = layer.signal
 		}
 
 		this.signal = layer.signal
+	}
+
+	train(inputter, outputter) {
+		let inputs = inputter.slice()
+		let outputs = outputter.slice()
+		let I = 0
+
+		this.activate(inputs)
 
 		// back-propogate
 		for (let I = this.layers.length-1; I >= 0; I--) {

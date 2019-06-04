@@ -146,7 +146,7 @@ console.log(expectation)
 		this.activate(this.inputs)
 	}
 
-	get prettyTopology() {
+	get topology() {
 		let maxLength = 0
 
 		for (let X of this.layers)

@@ -1,6 +1,8 @@
 function assert(truthy, msg) {
 	if (truthy) console.log("Pass: ", msg)
 	else console.error("Fail: ", msg)
+
+	console.log()
 }
 
 
@@ -23,7 +25,9 @@ assert(graf = new Ptron.graph(
 
 let expectedTopology = [[0,2,5], [1,3], [4,6,7]]
 
-assert(expectedTopology = graf.topology, "topology should be correctly gleaned")
+console.dir(graf)
+
+assert(expectedTopology == graf.topology, `topology is ${graf.topology} and should be ${expectedTopology}`)
 console.log(graf.topology)
 
 console.log(graf.prettyTopology)

@@ -29,17 +29,23 @@ module.exports = class Perceptron {
 
 	set model(valArray) { this.weight = valArray }
 
-	train(inputter, output) {
+	activate(inputter) {
 		let inputs = inputter.slice()
-
+		
 		this.signal = this.bias
-
+		
 		for (let I = 0; I < inputs.length; ++I) {
 			this.signal += this.weight[I] * inputs[I]
 		}
-
+		
 		this.signal = RELU(this.signal)
+	}
+	
+	train(inputter, output) {
+		let inputs = inputter.slice()
 
+		this.activate(inputter)
+		
 		this.error = output - this.signal
 
 		for (let I in this.weight) {
