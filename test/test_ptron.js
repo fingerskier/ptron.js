@@ -6,22 +6,24 @@ function assert(truthy, msg) {
 
 let Ptron = require('../ptron.js')
 
-let ptron = new Ptron.ptron(2)
+let ptron = new Ptron.ptron({
+	dimension: 2
+})
 
 assert( ptron instanceof Ptron.ptron, "ptron construction of correct type" )
 
-inputVals = [.1,.2]
+inputVals = [0.1, 0.2]
+outputVal = 0.5
 
-ptron.activate(inputVals)
+ptron.train(inputVals, outputVal)
 
-assert(ptron.activation, "ptron has an activation value after being activated")
+assert(ptron.signal, "ptron has an activation value after being activated")
 
 assert(ptron.activation != NaN, "ptron output should be numeric")
 
-ptron.learn(0.9, 0.1)
-assert(Math.abs(ptron.error) <= 0.1, "ptron error should decrease below threshold after learning")
-
-ptron.learn(0.1, 0.1)
-assert(Math.abs(ptron.error) <= 0.1, "ptron should be able to re-learn")
+let errorBefore = Math.abs(ptron.error)
+for (let I = 0; I < 1000; I++) ptron.train(inputVals, outputVal)
+let errorAfter = Math.abs(ptron.error)
+assert(errorAfter < errorBefore, `training should decrease error; before:${errorBefore}, after:${errorAfter}`)
 
 console.info(ptron)

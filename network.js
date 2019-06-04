@@ -7,8 +7,8 @@ const arrayMax = arr => {
 	return result
 }
 
-
 const Layer = require('./layer.js')
+
 
 module.exports = class Network {
 	constructor(sizes=[2,1]) {
@@ -23,21 +23,6 @@ module.exports = class Network {
 
 			this.layers[I] = new Layer(numInputs, numOutputs)
 		}
-	}
-
-	activate(inputs) {
-		let layer
-
-		this.inputs = inputs
-
-		for (layer of this.layers) {
-			layer.activate(inputs)
-
-			inputs = layer.activation
-		}
-
-		this.activation = layer.activation
-		return this.activation
 	}
 
 	get error() {
@@ -66,24 +51,32 @@ module.exports = class Network {
 		}
 	}
 
-	learn(expecto, threshold) {
-		this.train(expecto)
+	train(inputter, outputter) {
+		let inputs = inputter.slice()
+		let outputs = outputter.slice()
+		let layer
+		let I = 0
 
-		while (Math.abs(this.error) > threshold) this.train(expecto)
-	}
+		// feed-forward
+		for (layer of this.layers) {
+console.log(`train layer${I++} w/ ${inputs}->${outputs}`)
+			layer.train(inputs, outputs)
 
-	train(expecto) {
-		let expectation = expecto
-		// expectation is an array of expected values for the network
+			inputs = layer.signal
+		}
 
+		this.signal = layer.signal
+
+		// back-propogate
 		for (let I = this.layers.length-1; I >= 0; I--) {
 			let thisLayer = this.layers[I]
 
-			thisLayer.train(expectation)
+			if (I > 0) inputs = this.layers[I-1].signal
+			else inputs = inputter
 
-			expectation = thisLayer.expectation
+			thisLayer.train(inputs, outputs)
+
+			outputs = thisLayer.expects
 		}
-
-		this.activate(this.inputs)
 	}
 }

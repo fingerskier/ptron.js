@@ -1,4 +1,4 @@
-function assert(truthy, msg) {
+function assert(msg, truthy) {
 	if (truthy) console.log("Pass: ", msg)
 	else console.error("Fail: ", msg)
 }
@@ -9,20 +9,28 @@ let layer = new Ptron.layer(2,2)
 
 assert(layer instanceof Ptron.layer, "layer construction as Ptron type")
 
-let inputVals = [.3, .4]
-
-layer.activate(inputVals)
-
-assert(layer.nodes[0].inputs[0] == layer.nodes[1].inputs[0], "layer ptron inputs should be set by input()")
+let inputVals = [0.3, 0.4]
+let outputsVals = [0.5, 0.6]
 
 
-layer.learn([-0.1, 0.1], 0.1)
-assert(Math.abs(layer.error) <= 0.1, "error should be less than 0.1 after training")
+layer.train(inputVals, outputsVals)
+let errorBefore = layer.error
 
-console.log(layer, layer.error)
+while (Math.abs(layer.error) > 0.1) layer.train(inputVals, outputsVals)
+let errorAfter = layer.error
+assert(
+	`error: before=${errorBefore.toFixed(2)}, after=${errorAfter.toFixed(2)}, diff=${layer.error.toFixed(2)}`,
+	Math.abs(errorAfter) <= 0.1
+)
 
+errorBefore = layer.error
+while (Math.abs(layer.error) > 0.01) layer.train(inputVals, outputsVals)
+errorAfter = layer.error
+assert(
+	`error: before=${errorBefore.toFixed(2)}, after=${errorAfter.toFixed(2)}, diff=${layer.error.toFixed(2)}`,
+	Math.abs(errorAfter) <= 0.01
+)
 
-layer.learn([0.5, 0.8], 0.1)
-assert(Math.abs(layer.error) <= 0.1, "layer should be able to re-learn")
-
-console.log(layer, layer.error)
+console.log(layer)
+console.log(layer.signal)
+console.log(layer.error)

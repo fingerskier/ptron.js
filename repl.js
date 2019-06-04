@@ -8,25 +8,25 @@ const server = repl.start({
 })
 
 // load history if any
-fs.statSync('.node_repl_history')
+// fs.statSync('.node_repl_history')
 
 
 server.context.P = require('./ptron.js')
 
-server.context.net = new server.context.P.network([2,2,1])
-server.context.in0 = [.1,.2]
-server.context.in1 = [.2,.8]
+server.context.flat = [0.1,0.2,0.3]
+server.context.graf = new server.context.P.graph([
+	[3,4,5],
+	[3,4,5],
+	[3,4,5],
+	[6,7,8],
+	[6,7,8],
+	[6,7,8],
+	[],
+	[],
+	[]
+])
 
-server.context.ptron = new server.context.P.ptron(2)
-server.context.ptron.activate(server.context.in0)
-
-
-/*
-0	0	0
-0	1	1
-1	0	1
-1	1	0
-*/
+server.context.graf.activate(server.context.flat)
 
 
 server.on('exit', function() {

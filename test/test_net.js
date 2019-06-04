@@ -1,69 +1,93 @@
-function assert(truthy, msg) {
-	if (truthy) console.log("Pass: ", msg)
+function assert(msg, truth) {
+	if (truth) console.log("Pass: ", msg)
 	else console.error("Fail: ", msg)
 }
 
 
 let Ptron = require('../ptron.js')
 
-let net = new Ptron.network([2,2,2])
+let net = new Ptron.network([2,2,1])
 
-assert(net instanceof Ptron.network, "network construction as network type")
-
-let inputVals = [.5,.3]
-net.activate(inputVals)
-
-assert(net.layers[0].nodes[0].inputs[0] == net.layers[0].nodes[1].inputs[0], "network ptron inputs should be set by input()")
-
-
-net = new Ptron.network([2,2,1])
+assert(
+	"network instantiation as network type",
+	net instanceof Ptron.network
+)
 
 let one = [1]
 let zero = [0]
 let acceptableError = 0.1
+console.log("initial net", net.model)
+console.log()
 
-net.activate([0,0])
-net.learn(zero, acceptableError)
-assert(net.error < acceptableError, "net trained to 0 XOR 0")
-console.log(net.activation)
+let inputVals = [0,0]
+let outputVals = [0]
+while (Math.abs(net.error) > acceptableError) net.train(inputVals, outputVals)
+console.log("first training", net.model)
+assert(
+	`${inputVals[0]} XOR ${inputVals[1]} = ${net.signal}`,
+	Math.abs(net.error) < acceptableError
+)
+console.log(net.error)
 
-net.activate([0,1])
-net.learn(one, acceptableError)
-assert(net.error < acceptableError, "net trained to 0 XOR 1")
-console.log(net.activation)
+// inputVals = [0,1]
+// outputVals = [1]
+// while (Math.abs(net.error) > acceptableError) net.train(inputVals, outputVals)
+// assert(
+// 	`${inputVals[0]} XOR ${inputVals[1]} = ${net.signal}`,
+// 	Math.abs(net.error) < acceptableError
+// )
+// console.log(net.error)
 
-net.activate([1,0])
-net.learn(one, acceptableError)
-assert(net.error < acceptableError, "net trained to 1 XOR 0")
-console.log(net.activation)
+// inputVals = [1,0]
+// outputVals = [1]
+// while (Math.abs(net.error) > acceptableError) net.train(inputVals, outputVals)
+// assert(
+// 	`${inputVals[0]} XOR ${inputVals[1]} = ${net.signal}`,
+// 	Math.abs(net.error) < acceptableError
+// )
+// console.log(net.error)
 
-net.activate([1,1])
-net.learn(zero, acceptableError)
-assert(net.error < acceptableError, "net trained to 1 XOR 1")
-console.log(net.activation)
+// inputVals = [1,1]
+// outputVals = [0]
+// while (Math.abs(net.error) > acceptableError) net.train(inputVals, outputVals)
+// assert(
+// 	`${inputVals[0]} XOR ${inputVals[1]} = ${net.signal}`,
+// 	Math.abs(net.error) < acceptableError
+// )
+// console.log(net.error)
+
+// console.log(net.model)
+
 
 // see that the training holds for all states
-net.activate([0,0])
-net.learn(zero, acceptableError)
-let err00 = net.error
+// net.train([0,0], zero)
+// assert(
+// 	`training holds for 0 XOR 0; ${net.signal}`,
+// 	net.signal = zero
+// )
 
-net.activate([0,1])
-net.learn(one, acceptableError)
-let err01 = net.error
+// net.train([0,1], [1])
+// let err01 = net.error
 
-net.activate([1,0])
-net.learn(one, acceptableError)
-let err10 = net.error
+// net.train([1,0], [1])
+// let err10 = net.error
 
-net.activate([1,1])
-net.learn(zero, acceptableError)
-let err11 = net.error
-
-
-assert(err00 <= acceptableError, "training holds for 0 XOR 0")
-assert(err01 <= acceptableError, "training holds for 0 XOR 1")
-assert(err10 <= acceptableError, "training holds for 1 XOR 0")
-assert(err11 <= acceptableError, "training holds for 1 XOR 1")
+// net.train([1,1], [0])
+// let err11 = net.error
 
 
-for (layer of net.layers) for (node of layer.nodes) console.log(node)
+// assert(
+// 	"training holds for 0 XOR 1",
+// 	err01 <= acceptableError
+// )
+// assert(
+// 	"training holds for 1 XOR 0",
+// 	err10 <= acceptableError
+// )
+// assert(
+// 	"training holds for 1 XOR 1",
+// 	err11 <= acceptableError
+// )
+
+
+// console.log(net.model)

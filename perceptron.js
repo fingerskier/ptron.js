@@ -8,59 +8,43 @@ function RELU(X) {
 
 
 module.exports = class Perceptron {
-	constructor(dimension = 1, bias = 1, rate = 0.1) {
-		this.bias = bias
-		this.error = 1.0
-		this.expect = new Array(dimension)
-		this.rate = rate
-		this.weight = new Array(dimension)
+	constructor(opts) {
+		this.bias = opts.bias || 0.01
+		this.dimension = opts.dimension || 4
+		this.rate = opts.rate || 0.1
+		
+		this.signal = 0
+		this.error = 1
+		
+		this.expect = new Array(this.dimension)
+		this.weight = new Array(this.dimension)
 
-		// initially random weight
-		for (let I = 0; I < dimension; ++I) {
-			this.weight[I] = Math.random()
+		// initially random weights
+		for (let I = 0; I < this.dimension; ++I) {
+			this.weight[I] = 0.5	//Math.random()
 		}
 	}
 
-	activate(inputs) {
-		let result = this.bias
+	get model() { return this.weight }
 
-		this.inputs = inputs	// remember the inputs for training
+	set model(valArray) { this.weight = valArray }
+
+	train(inputter, output) {
+		let inputs = inputter.slice()
+
+		this.signal = this.bias
 
 		for (let I = 0; I < inputs.length; ++I) {
-			result += this.weight[I] * inputs[I]
+			this.signal += this.weight[I] * inputs[I]
 		}
 
-		result = RELU(result)
-		this.activation = result
-		return result
-	}
+		this.signal = RELU(this.signal)
 
-	get expectation() {
-		return this.expect
-	}
-
-	learn(expected_output, threshold) {
-		this.error = expected_output - this.activate(this.inputs)
-
-		while (Math.abs(this.error) > threshold) this.train(expected_output)
-	}
-
-	get model() {
-		return this.weight
-	}
-
-	set model(valArray) {
-		this.weight = valArray
-	}
-
-	train(expected_output) {
-		// training is based on the previous output
-		// so, the ptron must be activated prior to training a new set of inputs
-		this.error = expected_output - this.activate(this.inputs)
+		this.error = output - this.signal
 
 		for (let I in this.weight) {
 			this.expect[I] = Math.sqrt(Math.abs(this.error / this.weight[I]))
-			this.weight[I] = this.weight[I] + (this.error * this.inputs[I] * this.rate)
+			this.weight[I] = this.weight[I] + (this.error * inputs[I] * this.rate)
 		}
 	}
 }

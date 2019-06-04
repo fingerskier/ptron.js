@@ -29,46 +29,48 @@ module.exports = class {
 		// Note that the _graph_ does not enforce any kind of structure;
 		// errant topology is up to the implementor to disentangle
 		this.activation = []	// activation of each layer, by layer-index
-		this.layer = new Array(conx.length)	// the layer number of each element, by node-index
+		this.layerNum = new Array(conx.length)	// the layer number of each element, by node-index
 		this.nodes = []	// the actual perceptron controllers
-		this.topology = []		// array of nodes per layer
+		this.layers = []		// array of nodes per layer
 
 		// elements in the array give the layer number of each node
-		this.layer = this.layer.fill(0)
+		this.layerNum = this.layerNum.fill(0)
 		
 		// set the layer number of each node
-		for (let I in conx) {
-			for (let X of conx[I]) {
-				this.layer[X] = this.layer[I] + 1
-			}
-		}
+		for (let I in conx)
+			for (let X of conx[I])
+				this.layerNum[X] = this.layerNum[I] + 1
 		
 		// add node-indices to the topology array
-		for (let I in this.layer) {
-			let index = this.layer[I]
-			this.topology[index] = this.topology[index] || []
-			this.topology[index].push(+I)
+		for (let I = 0; I <= arrayMax(this.layerNum); ++I)
+			this.layers[I] = []
+
+		for (let I in this.layerNum) {
+			let index = this.layerNum[I]
+			this.layers[index].push(+I)
 		}
 
 		// glean the dimension of each layer
 		let dimension = new Array(conx.length)
-		for (let layer of this.topology)
-			for (let nodeIndex of layer)
-				dimension[nodeIndex] = layer.length
+		for (let L of this.layers)
+			for (let nodeIndex of L)
+				dimension[nodeIndex] = L.length
 
 		// instantiate all the node controllers
-		for (let I = 0; I < conx.length; I++) this.nodes.push(new Perceptron(dimension[I]))
+		for (let I = 0; I < conx.length; I++)
+			this.nodes.push(new Perceptron(dimension[I]))
 	}
 
 	activate(inputs) {
 		// cycle through "layers" and activate each node, top to bottom
-        let layerActivation = []
-        
-		for (let layer of this.topology) {
-			layerActivation = []
+		let layerActivation = []
 
+		for (let layer of this.layers) {
+			layerActivation = []
+			
 			for (let nodeIndex of layer) {
 				let thisNode = this.nodes[nodeIndex]
+				
 				
 				// activate this node
 				thisNode.activate(inputs)
@@ -83,8 +85,8 @@ module.exports = class {
 		this.activation = layerActivation
 
 		return this.activation
-    }
-    
+	}
+
 	get error() {
 		let errors = []
 
@@ -134,10 +136,11 @@ module.exports = class {
 	}
 
 	train(expectation) {
-		this.expect.fill(0)
+		console.log("EXPECTATION", expectation)
 
-		for (let I in this.nodes) {
-			this.nodes[I].train(expectation[I])
+console.log(expectation)
+		for (let node of this.nodes) {
+			node.train(expectation[I])
 		}
 
 		this.activate(this.inputs)
@@ -146,13 +149,13 @@ module.exports = class {
 	get prettyTopology() {
 		let maxLength = 0
 
-		for (let X of this.topology)
+		for (let X of this.layers)
 			if (maxLength < X.length) maxLength = X.length 
 
 		let result = ""
 
 		for (let I = 0; I < maxLength; I++) {
-			for (let layer of this.topology) {
+			for (let layer of this.layers) {
 				if (layer[I]) result += ' ' + layer[I]
 				else result += '  '
 			}

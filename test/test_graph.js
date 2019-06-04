@@ -28,8 +28,6 @@ console.log(graf.topology)
 
 console.log(graf.prettyTopology)
 
-console.log("graf overview", graf)
-
 /*
 	0	3	6
 	1	4	7
@@ -50,6 +48,8 @@ graf = new Ptron.graph([
 let flat = [0.1,0.2,0.3]
 graf.activate(flat)
 
-console.log("graf signal", graf.activation)
+console.log("graf pre-train", graf.activation)
 
-graf.learn(flat, 0.5)
+graf.train(flat)
+
+console.log("graf post-train", graf.activation)
