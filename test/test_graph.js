@@ -27,8 +27,7 @@ let expectedTopology = [[0,2,5], [1,3], [4,6,7]]
 
 console.dir(graf)
 
-assert(expectedTopology == graf.topology, `topology is ${graf.topology} and should be ${expectedTopology}`)
-console.log(graf.topology)
+assert(JSON.stringify(expectedTopology) == JSON.stringify(graf.layers), `topology is ${graf.layers} and should be ${expectedTopology}`)
 
 console.log(graf.prettyTopology)
 
