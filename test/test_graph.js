@@ -25,16 +25,17 @@ assert(graf = new Ptron.graph(
 
 let expectedTopology = [[0,2,5], [1,3], [4,6,7]]
 
-console.dir(graf)
+// console.dir(graf)
 
-assert(JSON.stringify(expectedTopology) == JSON.stringify(graf.layers), `topology is ${graf.layers} and should be ${expectedTopology}`)
-
-console.log(graf.prettyTopology)
+assert(
+	JSON.stringify(expectedTopology) == JSON.stringify(graf.layers),
+	`topology is ${graf.layers} and should be ${expectedTopology}`
+)
 
 /*
-	0	3	6
-	1	4	7
-	2	5	8
+0	3	6
+1	4	7
+2	5	8
 */
 graf = new Ptron.graph([
 	[3,4,5],
@@ -48,11 +49,18 @@ graf = new Ptron.graph([
 	[]
 ])
 
+console.log(graf.topology)
+console.log(graf.model)
+
 let flat = [0.1,0.2,0.3]
+
 graf.activate(flat)
+console.log(graf.model)
 
-console.log("graf pre-train", graf.activation)
 
-graf.train(flat)
+// console.log("graf pre-train", graf.activation)
 
-console.log("graf post-train", graf.activation)
+graf.train([0.3,0.2,0.1])
+console.log(graf.model)
+
+// console.log("graf post-train", graf.activation)

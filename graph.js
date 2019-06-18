@@ -65,23 +65,10 @@ module.exports = class {
 		// cycle through "layers" and activate each node, top to bottom
 		let layerActivation = []
 
-		for (let layer of this.layers) {
-			layerActivation = []
-			
-			for (let nodeIndex of layer) {
-				let thisNode = this.nodes[nodeIndex]
-				
-				
-				// activate this node
-				thisNode.activate(inputs)
-				
-				// store this node's activation in an array for the next layer
-				layerActivation.push(thisNode.activation)
-			}
-			
-			inputs = layerActivation
+		for (let I = 0; I < this.layers.length-1; --I) {
+			inputs = this.layer_activation(I, inputs)
 		}
-		
+
 		this.activation = layerActivation
 
 		return this.activation
@@ -111,6 +98,22 @@ module.exports = class {
 		return this.expect
 	}
 
+	layer_activation(layer_num, inputs) {
+		let result = []
+
+		layer = this.layers[layer_num]
+
+		for (let nodeIndex of layer) {
+			let thisNode = this.nodes[nodeIndex]
+
+			thisNode.activate(inputs) // activate this node
+
+			result.push(thisNode.activation) // store this node's activation in an array for the next layer
+		}
+
+		return result
+	}
+
 	learn(expected_output, threshold) {
 		this.train(expected_output)
 
@@ -136,11 +139,18 @@ module.exports = class {
 	}
 
 	train(expectation) {
-		console.log("EXPECTATION", expectation)
+		for (var I=this.layers.length-1; I > 0; --I){
+			let inputs = this.layer_expectation(I)
 
-console.log(expectation)
-		for (let node of this.nodes) {
-			node.train(expectation[I])
+			for (let nodeIndex of layer) {
+				let thisNode = this.nodes[nodeIndex]
+
+				// activate this node
+				thisNode.train(inputs)
+
+				// store this node's activation in an array for the next layer
+				result.push(thisNode.activation)
+			}
 		}
 
 		this.activate(this.inputs)
@@ -156,7 +166,7 @@ console.log(expectation)
 
 		for (let I = 0; I < maxLength; I++) {
 			for (let layer of this.layers) {
-				if (layer[I]) result += ' ' + layer[I]
+				if (layer[I] >= 0) result += ' ' + layer[I]
 				else result += '  '
 			}
 			result += '\n\r'
