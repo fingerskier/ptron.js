@@ -76,7 +76,8 @@ module.exports = class Layer {
 		let inputs = inputter.slice()
 		let outputs = outputter.slice()
 
-		this.activate(inputter)
+console.log('layer.train',inputter,outputter)
+		this.activate(inputs)
 
 		for (let I in this.nodes) {
 			this.nodes[I].train(inputs, outputs[I])

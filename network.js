@@ -78,7 +78,7 @@ module.exports = class Network {
 			let thisLayer = this.layers[I]
 
 			if (I > 0) inputs = this.layers[I-1].signal
-			else inputs = inputter
+			else inputs = inputter.slice()
 
 			thisLayer.train(inputs, outputs)
 

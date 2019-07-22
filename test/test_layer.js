@@ -14,10 +14,11 @@ let outputsVals = [0.5, 0.6]
 
 
 layer.train(inputVals, outputsVals)
-let errorBefore = layer.error
 
+let errorBefore = layer.error
 while (Math.abs(layer.error) > 0.1) layer.train(inputVals, outputsVals)
 let errorAfter = layer.error
+
 assert(
 	`error: before=${errorBefore.toFixed(2)}, after=${errorAfter.toFixed(2)}, diff=${layer.error.toFixed(2)}`,
 	Math.abs(errorAfter) <= 0.1
@@ -26,11 +27,12 @@ assert(
 errorBefore = layer.error
 while (Math.abs(layer.error) > 0.01) layer.train(inputVals, outputsVals)
 errorAfter = layer.error
+
 assert(
 	`error: before=${errorBefore.toFixed(2)}, after=${errorAfter.toFixed(2)}, diff=${layer.error.toFixed(2)}`,
 	Math.abs(errorAfter) <= 0.01
 )
 
-console.log(layer)
-console.log(layer.signal)
-console.log(layer.error)
+// console.log(layer)
+// console.log(layer.signal)
+// console.log(layer.error)

@@ -9,7 +9,7 @@ function RELU(X) {
 
 module.exports = class Perceptron {
 	constructor(opts) {
-		this.bias = opts.bias || 0.01
+		this.bias = opts.bias || 1
 		this.dimension = opts.dimension || 4
 		this.rate = opts.rate || 0.1
 		
@@ -19,9 +19,9 @@ module.exports = class Perceptron {
 		this.expect = new Array(this.dimension)
 		this.weight = new Array(this.dimension)
 
-		// initially random weights
+		// initial weights
 		for (let I = 0; I < this.dimension; ++I) {
-			this.weight[I] = 0.5	//Math.random()
+			this.weight[I] = 0.5
 		}
 	}
 
@@ -44,7 +44,7 @@ module.exports = class Perceptron {
 	train(inputter, output) {
 		let inputs = inputter.slice()
 
-		this.activate(inputter)
+		this.activate(inputs)
 		
 		this.error = output - this.signal
 
