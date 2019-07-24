@@ -17,17 +17,11 @@ module.exports = class Perceptron {
 		this.error = 1
 		
 		this.expect = new Array(this.dimension)
-		this.weight = new Array(this.dimension)
+		this.model = new Array(this.dimension)
 
-		// initial weights
-		for (let I = 0; I < this.dimension; ++I) {
-			this.weight[I] = 0.5
-		}
+		this.expect.fill(0)
+		this.model.fill(0.5)
 	}
-
-	get model() { return this.weight }
-
-	set model(valArray) { this.weight = valArray }
 
 	activate(inputter) {
 		let inputs = inputter.slice()
@@ -35,22 +29,25 @@ module.exports = class Perceptron {
 		this.signal = this.bias
 		
 		for (let I = 0; I < inputs.length; ++I) {
-			this.signal += this.weight[I] * inputs[I]
+			this.signal += this.model[I] * inputs[I]
 		}
 		
 		this.signal = RELU(this.signal)
 	}
-	
-	train(inputter, output) {
-		let inputs = inputter.slice()
 
+	train(inputs, output) {
 		this.activate(inputs)
 		
 		this.error = output - this.signal
+		// console.log(`ptron.train_initial ${output}, ${this.signal}`)
 
-		for (let I in this.weight) {
-			this.expect[I] = Math.sqrt(Math.abs(this.error / this.weight[I]))
-			this.weight[I] = this.weight[I] + (this.error * inputs[I] * this.rate)
+		this.expect.fill(0)
+
+		for (let I in this.model) {
+			// console.log(`ptron.train_loop`,this.error, this.model[I])
+			this.expect[I] = Math.sqrt(Math.abs(this.error / this.model[I]))
+			this.model[I] = this.model[I] + (this.error * inputs[I] * this.rate)
+			// console.log(`ptron expects ${this.expect}`)
 		}
 	}
 }

@@ -139,6 +139,7 @@ module.exports = class {
 	}
 
 	train(expectation) {
+		// cycle backwards through "layers" and train each node, top to bottom
 		for (var I=this.layers.length-1; I > 0; --I){
 			let inputs = this.layer_expectation(I)
 
@@ -173,9 +174,5 @@ module.exports = class {
 		}
 
 		return result
-	}
-
-	train() {
-		// cycle backwards through "layers" and train each node, top to bottom
 	}
 }

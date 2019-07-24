@@ -2,10 +2,10 @@
 
 const arrayMax = arr => {
 	let result = 0
-
+	
 	for (let X of arr) 
-		if (Math.abs(X) > result) result = X
-
+	if (Math.abs(X) > result) result = X
+	
 	return result
 }
 
@@ -14,51 +14,23 @@ const Perceptron = require('./perceptron.js')
 
 module.exports = class Layer {
 	constructor(numInputs = 1, numOutputs = 1) {
-		this.expect = new Array(numOutputs)
+		this.expect = new Array(numInputs)
 		this.nodes = []
 		this.signal = new Array(numOutputs)
-
+		
+		this.expect.fill(0)
+		
 		for (let I = 0; I < numOutputs; I++) {
 			this.nodes.push(new Perceptron({dimension:numInputs}))
 		}
 	}
-
+	
 	get error() {
 		let errors = []
-
+		
 		this.nodes.forEach(node => errors.push(node.error))
-
+		
 		return arrayMax(errors)
-	}
-
-	get expects() {
-		for (let I in this.expect) {
-			this.expect[I] = 0
-
-			for (let J in this.nodes) {
-				this.expect[I] += this.nodes[I].expect[J]
-			}
-
-			this.expect[I] = this.expect[I] / this.nodes[0].expect.length
-		}
-
-		return this.expect
-	}
-
-	get model() {
-		let result = []
-
-		for (let node of this.nodes)
-			result.push(node.weight)
-
-		return result
-	}
-
-	set model(valArrays) {
-		let I = 0
-
-		for (let node of this.nodes)
-			node.model = valArrays[I++]
 	}
 
 	activate(inputter) {
@@ -72,16 +44,29 @@ module.exports = class Layer {
 		}
 	}
 
-	train(inputter, outputter) {
-		let inputs = inputter.slice()
-		let outputs = outputter.slice()
-
-console.log('layer.train',inputter,outputter)
+	train(inputs, outputs) {
 		this.activate(inputs)
 
+		// console.log(`layer.train_initial ${inputs} |`, outputs)
+		// console.log(`layer.outputs `, outputs)
+
 		for (let I in this.nodes) {
+			// console.log(`layer.train_node#${I}`, inputs, outputs[I])
 			this.nodes[I].train(inputs, outputs[I])
 			this.signal.push(this.nodes[I].signal)
 		}
+
+		this.expect.fill(0)
+		let firstNode = this.nodes[0]
+
+		for (let I in firstNode.expect) {
+			for (let N of this.nodes) {
+				this.expect[I] += N.expect[I]
+			}
+
+			this.expect[I] /= firstNode.expect.length
+		}
+
+		// console.log(`layer.expect `, this.expect)
 	}
 }

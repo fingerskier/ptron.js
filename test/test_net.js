@@ -14,8 +14,6 @@ assert(
 )
 
 let acceptableError = 0.1
-console.log("initial net", net.model)
-console.log()
 
 let data = [{
 	input:[1,0], output:[1]
@@ -27,17 +25,22 @@ let data = [{
 	input:[1,1], output:[0]
 }]
 
-while (Math.abs(net.error) > acceptableError) {
+//  {
 	for (let I=0; I < data.length; I++) {
+	// for (let I=0; I < 1; I++) {
 		let inputs = data[I].input
 		let outputs = data[I].output
-		console.log(`Training #${I}, before`, net.model)
-		net.train(inputs, outputs)
-		console.log(`Training #${I}, after`, net.model)
+
+		console.log(`${I}: before`, inputs, net.signal, net.error)
+		while (Math.abs(net.error) > acceptableError)
+			net.train(inputs, outputs)
+		console.log(`${I}: after`, inputs, net.signal, net.error)
 	
 		assert(
 			`${inputs[0]} XOR ${inputs[1]} = ${net.signal}`,
 			Math.abs(net.error) < acceptableError
 		)
+
+		console.log()
 	}
-}
+// }

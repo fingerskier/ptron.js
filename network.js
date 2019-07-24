@@ -1,8 +1,10 @@
 const arrayMax = arr => {
 	let result = 0
+	let X = 0
 
-	for (let X of arr) 
-		if (Math.abs(X) > result) result = X
+	for (let I in arr) arr[I] = Math.abs(arr[I])
+	
+	for (X of arr) (X > result) ? result = X : result
 
 	return result
 }
@@ -15,6 +17,7 @@ module.exports = class Network {
 		// 'sizes' is an array of integers giving the number of nodes per layer
 
 		let numLayers = sizes.length - 1
+
 		this.layers = new Array(numLayers)
 
 		for (let I = 0; I < sizes.length-1; I++) {
@@ -33,26 +36,7 @@ module.exports = class Network {
 		return arrayMax(errors)
 	}
 
-	get model() {
-		let result = []
-
-		for (let layer of this.layers) {
-			result.push(layer.model)
-		}
-
-		return result
-	}
-
-	set model(valArrays) {
-		let I = 0
-
-		for (let layer of this.layers) {
-			layer.model = valArrays[I++]
-		}
-	}
-
-	activate(inputter) {
-		let inputs = inputter.slice()
+	activate(inputs) {
 		let layer
 		let I = 0
 
@@ -66,23 +50,21 @@ module.exports = class Network {
 		this.signal = layer.signal
 	}
 
-	train(inputter, outputter) {
-		let inputs = inputter.slice()
-		let outputs = outputter.slice()
+	train(inputs, outputs) {
 		let I = 0
 
 		this.activate(inputs)
 
 		// back-propogate
 		for (let I = this.layers.length-1; I >= 0; I--) {
+			let thisInput = (I > 0) ? this.layers[I-1].signal : inputs
 			let thisLayer = this.layers[I]
-
-			if (I > 0) inputs = this.layers[I-1].signal
-			else inputs = inputter.slice()
-
-			thisLayer.train(inputs, outputs)
-
-			outputs = thisLayer.expects
+			
+			// console.log(`net.train_layer${I}: ${thisInput} | `, outputs)
+			thisLayer.train(thisInput, outputs)
+			
+			outputs = thisLayer.expect
+			// console.log(`net.train_layer${I}_end: `, outputs)
 		}
 	}
 }
