@@ -1,9 +1,3 @@
-function assert(msg, truth) {
-	if (truth) console.log("Pass: ", msg)
-	else console.error("Fail: ", msg)
-}
-
-
 let Ptron = require('../ptron.js')
 
 let net = new Ptron.network([2,2,1])
@@ -25,22 +19,28 @@ let data = [{
 	input:[1,1], output:[0]
 }]
 
-//  {
-	for (let I=0; I < data.length; I++) {
-	// for (let I=0; I < 1; I++) {
-		let inputs = data[I].input
-		let outputs = data[I].output
+for (let I=0; I < data.length; I++) {
+	let inputs = data[I].input
+	let outputs = data[I].output
 
-		console.log(`${I}: before`, inputs, net.signal, net.error)
-		while (Math.abs(net.error) > acceptableError)
-			net.train(inputs, outputs)
-		console.log(`${I}: after`, inputs, net.signal, net.error)
-	
-		assert(
-			`${inputs[0]} XOR ${inputs[1]} = ${net.signal}`,
-			Math.abs(net.error) < acceptableError
-		)
+	console.log(`${I}: before`, inputs, net.signal, net.error)
+	while (Math.abs(net.error) > acceptableError)
+		net.train(inputs, outputs)
+	console.log(`${I}: after`, inputs, net.signal, net.error)
 
-		console.log()
-	}
-// }
+	console.log()
+}
+
+
+for (let I=0; I < data.length; I++) {
+	let inputs = data[I].input
+	let outputs = data[I].output
+
+	assert(
+		`${inputs[0]} XOR ${inputs[1]} = ${net.signal}`,
+		Math.abs(net.error) < acceptableError
+	)
+
+	console.log()
+}
+

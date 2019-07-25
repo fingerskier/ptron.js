@@ -1,18 +1,7 @@
 // a layer is a set of perceptrons that share the same inputs
 
-const arrayMax = arr => {
-	let result = 0
-	
-	for (let X of arr) 
-	if (Math.abs(X) > result) result = X
-	
-	return result
-}
 
-const Perceptron = require('./perceptron.js')
-
-
-module.exports = class Layer {
+class Layer {
 	constructor(numInputs = 1, numOutputs = 1) {
 		this.expect = new Array(numInputs)
 		this.nodes = []
@@ -70,3 +59,6 @@ module.exports = class Layer {
 		// console.log(`layer.expect `, this.expect)
 	}
 }
+
+if (typeof module !== 'undefined' && typeof module.exports !== 'undefined')
+    module.exports = Layer

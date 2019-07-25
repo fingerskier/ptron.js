@@ -1,18 +1,4 @@
-const arrayMax = arr => {
-	let result = 0
-	let X = 0
-
-	for (let I in arr) arr[I] = Math.abs(arr[I])
-	
-	for (X of arr) (X > result) ? result = X : result
-
-	return result
-}
-
-const Layer = require('./layer.js')
-
-
-module.exports = class Network {
+class Network {
 	constructor(sizes=[2,1]) {
 		// 'sizes' is an array of integers giving the number of nodes per layer
 
@@ -33,7 +19,7 @@ module.exports = class Network {
 
 		this.layers.forEach(layer => errors.push(layer.error))
 
-		return arrayMax(errors)
+		return arrayMax(errors)	// arrayMax is always non-negative
 	}
 
 	activate(inputs) {
@@ -47,14 +33,27 @@ module.exports = class Network {
 			inputs = layer.signal
 		}
 
-		this.signal = layer.signal
+		this.signal = layer.signal	// final/outputs layer
+
+		return this.signal
+	}
+
+	learn(data, threshold) {
+		// data typeof [{input:[], output:[]}]
+		this.train(data.input, data.output)
+
+		while (this.error > threshold) {
+			this.train(data.input, data.output)
+		}
+
+		return this.error
 	}
 
 	train(inputs, outputs) {
 		let I = 0
 
 		this.activate(inputs)
-
+		
 		// back-propogate
 		for (let I = this.layers.length-1; I >= 0; I--) {
 			let thisInput = (I > 0) ? this.layers[I-1].signal : inputs
@@ -66,5 +65,12 @@ module.exports = class Network {
 			outputs = thisLayer.expect
 			// console.log(`net.train_layer${I}_end: `, outputs)
 		}
+
+		this.activate(inputs)
+
+		return this.signal
 	}
 }
+
+if (typeof module !== 'undefined' && typeof module.exports !== 'undefined')
+    module.exports = Network

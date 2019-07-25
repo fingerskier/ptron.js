@@ -1,13 +1,4 @@
-function sigmoid(X) {
-	return 1 / (1 + Math.exp(X))
-}
-
-function RELU(X) {
-	return Math.max(0, X)
-}
-
-
-module.exports = class Perceptron {
+class Perceptron {
 	constructor(opts) {
 		this.bias = opts.bias || 1
 		this.dimension = opts.dimension || 4
@@ -51,3 +42,6 @@ module.exports = class Perceptron {
 		}
 	}
 }
+
+if (typeof module !== 'undefined' && typeof module.exports !== 'undefined')
+    module.exports = Perceptron
