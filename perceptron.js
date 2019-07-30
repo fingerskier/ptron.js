@@ -2,11 +2,11 @@ class Perceptron {
 	constructor(opts) {
 		this.bias = opts.bias || 1
 		this.dimension = opts.dimension || 4
-		this.rate = opts.rate || 0.1
-		
+		this.rate = opts.rate || 0.01
+
 		this.signal = 0
 		this.error = 1
-		
+
 		this.expect = new Array(this.dimension)
 		this.model = new Array(this.dimension)
 
@@ -14,32 +14,33 @@ class Perceptron {
 		this.model.fill(0.5)
 	}
 
-	activate(inputter) {
-		let inputs = inputter.slice()
-		
+	set input(val_arr) {
 		this.signal = this.bias
 		
-		for (let I = 0; I < inputs.length; ++I) {
-			this.signal += this.model[I] * inputs[I]
+		for (let I = 0; I < val_arr.length; ++I) {
+			this.signal += this.model[I] * val_arr[I]
 		}
 		
-		this.signal = RELU(this.signal)
+		// this.signal = LRELU(this.signal)
 	}
 
-	train(inputs, output) {
-		this.activate(inputs)
-		
-		this.error = output - this.signal
-		// console.log(`ptron.train_initial ${output}, ${this.signal}`)
+	learn(data) {
+		this.input = data.input
+
+		this.error = data.output - this.signal
 
 		this.expect.fill(0)
-
+		
 		for (let I in this.model) {
-			// console.log(`ptron.train_loop`,this.error, this.model[I])
 			this.expect[I] = Math.sqrt(Math.abs(this.error / this.model[I]))
-			this.model[I] = this.model[I] + (this.error * inputs[I] * this.rate)
-			// console.log(`ptron expects ${this.expect}`)
+			
+			let diff = this.rate * this.error * data.input[I]
+			console.log(`diff=${diff}`)
+
+			this.model[I] = this.model[I] + diff
 		}
+
+		return this.signal
 	}
 }
 

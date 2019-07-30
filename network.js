@@ -22,15 +22,15 @@ class Network {
 		return arrayMax(errors)	// arrayMax is always non-negative
 	}
 
-	activate(inputs) {
+	set input(val_arr) {
 		let layer
 		let I = 0
 
 		// feed-forward
 		for (layer of this.layers) {
-			layer.activate(inputs)
+			layer.input = val_arr
 
-			inputs = layer.signal
+			val_arr = layer.signal
 		}
 
 		this.signal = layer.signal	// final/outputs layer
@@ -38,35 +38,22 @@ class Network {
 		return this.signal
 	}
 
-	learn(data, threshold) {
-		// data typeof [{input:[], output:[]}]
-		this.train(data.input, data.output)
-
-		while (this.error > threshold) {
-			this.train(data.input, data.output)
-		}
-
-		return this.error
-	}
-
-	train(inputs, outputs) {
+	learn(data) {
 		let I = 0
 
-		this.activate(inputs)
-		
+		this.input = data.input
+
 		// back-propogate
 		for (let I = this.layers.length-1; I >= 0; I--) {
-			let thisInput = (I > 0) ? this.layers[I-1].signal : inputs
+			let theInput = (I > 0) ? this.layers[I-1].signal : data.input
 			let thisLayer = this.layers[I]
-			
-			// console.log(`net.train_layer${I}: ${thisInput} | `, outputs)
-			thisLayer.train(thisInput, outputs)
-			
-			outputs = thisLayer.expect
-			// console.log(`net.train_layer${I}_end: `, outputs)
+
+			thisLayer.learn({input:theInput, output:data.output})
+
+			data.output = thisLayer.expect
 		}
 
-		this.activate(inputs)
+		this.input = data.input
 
 		return this.signal
 	}

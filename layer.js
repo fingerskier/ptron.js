@@ -6,44 +6,39 @@ class Layer {
 		this.expect = new Array(numInputs)
 		this.nodes = []
 		this.signal = new Array(numOutputs)
-		
+
 		this.expect.fill(0)
-		
+
 		for (let I = 0; I < numOutputs; I++) {
 			this.nodes.push(new Perceptron({dimension:numInputs}))
 		}
 	}
-	
+
 	get error() {
 		let errors = []
-		
+
 		this.nodes.forEach(node => errors.push(node.error))
-		
+
 		return arrayMax(errors)
 	}
 
-	activate(inputter) {
-		let inputs = inputter.slice()
-
+	set input(val_arr) {
 		this.signal = []
 
 		for (let I in this.nodes) {
-			this.nodes[I].activate(inputs)
+			this.nodes[I].input = val_arr
 			this.signal.push(this.nodes[I].signal)
 		}
 	}
 
-	train(inputs, outputs) {
-		this.activate(inputs)
-
-		// console.log(`layer.train_initial ${inputs} |`, outputs)
-		// console.log(`layer.outputs `, outputs)
+	learn(data) {
+		this.input = data.input
 
 		for (let I in this.nodes) {
-			// console.log(`layer.train_node#${I}`, inputs, outputs[I])
-			this.nodes[I].train(inputs, outputs[I])
-			this.signal.push(this.nodes[I].signal)
+			this.nodes[I].learn({input:data.input, output:data.output[I]})
 		}
+		
+		this.input = data.input
 
 		this.expect.fill(0)
 		let firstNode = this.nodes[0]
@@ -56,7 +51,7 @@ class Layer {
 			this.expect[I] /= firstNode.expect.length
 		}
 
-		// console.log(`layer.expect `, this.expect)
+		return this.signal
 	}
 }
 
