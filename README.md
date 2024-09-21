@@ -20,3 +20,42 @@ Models can also be trained _in the wild_ as needed.
 
 Multiple small models can be munged to perform more complex tasks
 e.g. multiple MLPs for each type of data, the results of which feed into another perceptron for a higher-level classification
+
+
+## How to use
+
+```javascript
+import Ptron from 'ptron.js'
+
+
+const mlp = new Ptron([3, 5, 2])
+const inputs = [
+  [0.1, 0.2, 0.3],
+  [0.4, 0.5, 0.6],
+  [0.7, 0.8, 0.9],
+]
+const targets = [
+  [0, 1],
+  [1, 0],
+  [0, 1],
+]
+
+console.time('Training time')
+
+mlp.loadModel('model.json')
+
+mlp.train(inputs, targets, 0.1, 1000000)
+
+const output = [
+  mlp.predict(inputs[0]),
+  mlp.predict(inputs[1]),
+  mlp.predict(inputs[2]),
+]
+
+console.log('Expected:', targets)
+console.log('Output:', output)
+
+mlp.saveModel('model.json')
+
+console.timeEnd('Training time')
+```
