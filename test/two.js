@@ -1,7 +1,7 @@
-import MLP from '../index.js'
+import Ptron from '../index.js'
 
 
-const mlp = new MLP([3, 5, 1, 5, 2])
+const mlp = new Ptron([3, 5, 1, 5, 2])
 
 const inputs = [
   [0.1, 0.2, 0.3],

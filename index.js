@@ -1,7 +1,7 @@
 import fs from 'fs'
 
 
-class MLP {
+class Ptron {
   constructor(layers) {
     this.layers = layers
     this.weights = []
@@ -163,4 +163,4 @@ class MLP {
 }
 
 
-export default MLP
+export default Ptron
